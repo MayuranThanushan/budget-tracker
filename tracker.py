@@ -38,7 +38,38 @@ def display_payments(name):
             print(f"invalid name: {name}")
         
     print(f"Total payments of {name}: {total_payments}")
-       
+
+def display_shares():
+    names = []
+    for item in payments + expenses:
+        if item[0] != names:
+            names.append(item[0])
+                
+    if len(names) > 0:
+        divisor = len(names)
+    else:
+        print("No names available")
+        return
+    
+    total_expenses = sum(item[1] for item in expenses)
+    share_per_person = total_expenses / divisor
+
+    print(f"Total expenses: {total_expenses:.2f}")
+    print(f"Each person's share: {share_per_person:.2f}")
+
+    for name in names:
+        total_payments = sum(item[1] for item in payments if item[0] == name)
+        total_expenses = sum(item[1] for item in expenses if item[0] == name)
+        balance_amount = total_expenses - total_payments
+        net_amount = balance_amount - share_per_person
+
+        if net_amount > 0:
+            print(f"{name} needs to receive {net_amount:.2f}")
+        elif net_amount < 0:
+            print(f"{name} needs to pay {-net_amount:.2f}")
+        else:
+                print(f"{name} has no transactions needed")
+
 
 if __name__ == "__main__":
     print("Welcome to the Expense Tracker!")
@@ -48,10 +79,11 @@ if __name__ == "__main__":
         print("1. Add Expense" +
         "\n2. Add Payment" +
         "\n3. Display Expenses" +
-        "\n4. Display shares" +
-        "\n5. Save Data" +
-        "\n6. Load Data" +
-        "\n7. Exit")
+        "\n4. Display Payments" +
+        "\n5. Display Shares" +
+        "\n6. Save Data" +
+        "\n7. Load Data" +
+        "\n8. Exit")
 
         choice = input("\nChoose an option: ")
 
@@ -72,12 +104,14 @@ if __name__ == "__main__":
             name = input("Enter the person name (type \"all\" to print all): ")
             display_payments(name)
         elif choice == '5':
+            display_shares()
+        elif choice == '6':
             filename = input("Enter filename to save data: ")
             save_data(filename)
-        elif choice == '6':
+        elif choice == '7':
             filename = input("Enter filename to load data: ")
             load_data(filename)
-        elif choice == '7':
+        elif choice == '8':
             print("Exiting Expense Tracker!")
             break
         else:
