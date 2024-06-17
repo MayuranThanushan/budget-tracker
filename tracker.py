@@ -1,6 +1,44 @@
-expenses = []
-payment = []  
+from datetime import datetime
 
+expenses = []
+payments = []  
+
+def add_expense(name, amount, description="none"):
+    expenses.append([name, amount, description, str(datetime.now())])
+    print(f"\nAdded expense: {name} - {amount} - {description}")
+
+def add_payment (name, amount, description="none"):
+    payments.append([name, amount, description, str(datetime.now())])
+    print(f"\nAdded payment: {name} - {amount} - {description}")
+    
+def display_expenses(name):
+    total_expenses = 0.0
+    for expense in expenses:
+        if (expense[0] == name):
+            print(f"- {expense}")
+            total_expenses += expense[1]       
+        elif (name == "all"):
+            print(f"- {expense}")
+            total_expenses += expense[1]
+        else:
+            print(f"invalid name: {name}")
+        
+    print(f"Total expenses of {name}: {total_expenses}")
+
+def display_payments(name):
+    total_payments = 0.0
+    for payment in payments:
+        if (payment[0] == name):
+            print(f"- {payment}")
+            total_payments += payment[1]       
+        elif (name == "all"):
+            print(f"- {payment}")
+            total_payments += payment[1]
+        else:
+            print(f"invalid name: {name}")
+        
+    print(f"Total payments of {name}: {total_payments}")
+       
 
 if __name__ == "__main__":
     print("Welcome to the Expense Tracker!")
@@ -32,7 +70,7 @@ if __name__ == "__main__":
             display_expenses(name)
         elif choice == '4':
             name = input("Enter the person name (type \"all\" to print all): ")
-            display_shares(name)
+            display_payments(name)
         elif choice == '5':
             filename = input("Enter filename to save data: ")
             save_data(filename)
