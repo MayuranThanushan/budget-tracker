@@ -1,4 +1,5 @@
 from datetime import datetime
+import pandas as pd
 
 expenses = []
 payments = []  
@@ -37,7 +38,7 @@ def display_payments(name):
         else:
             print(f"invalid name: {name}")
         
-    print(f"Total payments of {name}: {total_payments}")
+    print(f"\nTotal payments of {name}: {total_payments}")
 
 def display_shares():
     names = []
@@ -60,15 +61,47 @@ def display_shares():
     for name in names:
         total_payments = sum(item[1] for item in payments if item[0] == name)
         total_expenses = sum(item[1] for item in expenses if item[0] == name)
-        balance_amount = total_expenses - total_payments
+        balance_amount = total_payments - total_expenses
         net_amount = balance_amount - share_per_person
 
+        print("")
         if net_amount > 0:
             print(f"{name} needs to receive {net_amount:.2f}")
         elif net_amount < 0:
             print(f"{name} needs to pay {-net_amount:.2f}")
         else:
-                print(f"{name} has no transactions needed")
+            print(f"{name}'s account balanced")
+            
+
+def save_to_excel(filename):
+    try:
+        excelname = f"{filename}.xlsx"
+        columns_headings = ["Name", "Amount", "Description", "Date and Time of Transaction"]
+        payments_df = pd.DataFrame(payments, columns=columns_headings)
+        expenses_df = pd.DataFrame(expenses, columns=columns_headings)
+
+        with pd.ExcelWriter(excelname) as writer:
+            payments_df.to_excel(writer, sheet_name='Payments', index=False)
+            expenses_df.to_excel(writer, sheet_name='Expenses', index=False)
+        
+        print(f"{excelname} has been added.")
+    except Exception as e:
+        print("Invalid Filename")
+
+def load_from_excel(filename):
+    global payments, expenses
+    try:
+        excelname = f"{filename}.xlsx"
+        payments_df = pd.read_excel(excelname, sheet_name='Payments')
+        expenses_df = pd.read_excel(excelname, sheet_name='Expenses')
+
+        payments = payments_df.values.tolist()
+        expenses = expenses_df.values.tolist()
+
+        print(f"Data loaded from {excelname}")
+
+    except FileNotFoundError:
+        print(f"No data file found with the name {excelname}")
 
 
 if __name__ == "__main__":
@@ -81,11 +114,12 @@ if __name__ == "__main__":
         "\n3. Display Expenses" +
         "\n4. Display Payments" +
         "\n5. Display Shares" +
-        "\n6. Save Data" +
-        "\n7. Load Data" +
+        "\n6. Save Data as Excel" +
+        "\n7. Load Data from Excel" +
         "\n8. Exit")
 
         choice = input("\nChoose an option: ")
+        print("")
 
         if choice == '1':
             name = input("Enter the person name: ")
@@ -107,10 +141,10 @@ if __name__ == "__main__":
             display_shares()
         elif choice == '6':
             filename = input("Enter filename to save data: ")
-            save_data(filename)
+            save_to_excel(filename)
         elif choice == '7':
             filename = input("Enter filename to load data: ")
-            load_data(filename)
+            load_from_excel(filename)
         elif choice == '8':
             print("Exiting Expense Tracker!")
             break
